@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Party Valencia</title>
+
+    <!-- Meta etiquetas -->
+    <meta property="og:title" content="Radio Alborada FM" />
+    <meta property="og:description" content="Escucha la mejor música 24/7 con la mejor compañia." />
+    <meta property="og:image" content="https://i.postimg.cc/jjjXJ8bP/card-1.png" />
+    <meta property="og:url" content="" />
+    <meta property="og:type" content="website" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:'Segoe UI', sans-serif;
+        }
+
+        body{
+            background:#000;
+            color:#fff;
+            overflow:hidden;
+        }
+
+        /* ================= VIDEO FONDO ================= */
+        .video-bg{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            z-index:-2;
+            overflow:hidden;
+        }
+
+        .video-bg video{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+
+        /* Capa oscura encima del video */
+        .overlay{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.65);
+            z-index:-1;
+        }
+
+        .player-container{
+            width:100%;
+            max-width:420px;
+            height:100vh;
+            margin:auto;
+            position:relative;
+            display:flex;
+            flex-direction:column;
+            justify-content:center;
+            align-items:center;
+            padding:20px;
+        }
+
+        .card{
+            background:rgba(0,0,0,.6);
+            border-radius:25px;
+            padding:25px;
+            width:100%;
+            max-width:320px;
+            text-align:center;
+            box-shadow:0 20px 40px rgba(0,0,0,.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .cover{
+            width:220px;
+            height:220px;
+            margin:auto;
+            border-radius:20px;
+            overflow:hidden;
+        }
+
+        .cover img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+
+        .onair{
+            margin-top:15px;
+            background:#e53935;
+            display:inline-block;
+            padding:4px 12px;
+            border-radius:20px;
+            font-size:.8rem;
+            font-weight:bold;
+        }
+
+        h1{
+            margin-top:12px;
+            font-size:1.2rem;
+        }
+
+        p{
+            font-size:.9rem;
+            opacity:.8;
+            margin-top:5px;
+        }
+
+        .controls{
+            margin-top:25px;
+            display:flex;
+            justify-content:center;
+        }
+
+        .play-btn{
+            width:75px;
+            height:75px;
+            border-radius:50%;
+            background:#ffffff20;
+            border:2px solid rgba(255,255,255,.3);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            cursor:pointer;
+            transition:.3s;
+        }
+
+        .play-btn:hover{
+            transform:scale(1.1);
+        }
+
+        .play-btn img{
+            width:32px;
+            height:32px;
+        }
+
+        .socials{
+            margin-top:20px;
+            display:flex;
+            gap:25px;
+            justify-content:center;
+        }
+
+        .socials a{
+            color:#fff;
+            font-size:1.4rem;
+            transition:.3s;
+        }
+
+        .socials a:hover{
+            color:#ff4fd8;
+        }
+
+        #wave{
+            position:absolute;
+            bottom:0;
+            width:100%;
+            height:120px;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- VIDEO DE FONDO -->
+<div class="video-bg">
+    <video autoplay muted loop playsinline>
+        <source src="
+https://archive.org/serve/pin-down.io-racun-4469-1771256213/PinDown.io_%40racun4469_1771256213.mp4" type="video/mp4">
+    </video>
+</div>
+
+<div class="overlay"></div>
+
+<div class="player-container">
+
+    <div class="card">
+        <div class="cover">
+            <img id="coverImg" src="https://i.postimg.cc/jjjXJ8bP/card-1.png">
+        </div>
+
+        <div class="onair">ON AIR 24/7</div>
+        <h1 id="songTitle">ALBORADA FM</h1>
+        <p>100.5 TU MEJOR COMPAÑIA</p>
+    </div>
+
+    <div class="controls">
+        <div class="play-btn" id="playBtn">
+            <img id="playIcon">
+        </div>
+    </div>
+
+    <div class="socials">
+        <a href="https://www.facebook.com/1RFMjTjthp/" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+
+        <a href="https://www.instagram.com/djkevin_inthemix" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-instagram"></i>
+        </a>
+
+        <a href="https://www.tiktok.com/@djkevin_ok" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-tiktok"></i>
+        </a>
+    </div>
+
+    <canvas id="wave"></canvas>
+</div>
+
+<audio id="audio" src="https://radiohd.net:8240/stream" crossorigin="anonymous"></audio>
+
+<script>
+const audio = document.getElementById('audio');
+const playBtn = document.getElementById('playBtn');
+const playIcon = document.getElementById('playIcon');
+
+const PLAY_IMG = 'https://i.postimg.cc/J4xyfMf5/boton-de-play-(1).png';
+const PAUSE_IMG = 'https://i.postimg.cc/KvfK6mXS/en-pausa.png';
+
+let playing = false;
+playIcon.src = PLAY_IMG;
+
+playBtn.onclick = ()=>{
+    if(!playing){
+        audio.play();
+        playIcon.src = PAUSE_IMG;
+    }else{
+        audio.pause();
+        playIcon.src = PLAY_IMG;
+    }
+    playing = !playing;
+};
+
+const canvas = document.getElementById('wave');
+const ctx = canvas.getContext('2d');
+let audioCtx, analyser, source, dataArray;
+
+function init(){
+    if(audioCtx) return;
+    audioCtx = new AudioContext();
+    analyser = audioCtx.createAnalyser();
+    source = audioCtx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    analyser.fftSize = 256;
+    dataArray = new Uint8Array(analyser.frequencyBinCount);
+    animate();
+}
+
+function animate(){
+    requestAnimationFrame(animate);
+    analyser.getByteFrequencyData(dataArray);
+    canvas.width = innerWidth;
+    canvas.height = 120;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='rgba(255,255,255,.25)';
+    let x=0;
+    let w=(canvas.width/dataArray.length)*2;
+    ctx.beginPath();
+    ctx.moveTo(0,canvas.height);
+    dataArray.forEach(v=>{
+        let y=canvas.height-(v/255)*canvas.height;
+        ctx.lineTo(x,y);
+        x+=w;
+    });
+    ctx.lineTo(canvas.width,canvas.height);
+    ctx.fill();
+}
+
+audio.onplay = init;
+</script>
+
+</body>
+</html>
